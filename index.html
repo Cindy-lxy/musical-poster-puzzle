@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>音乐剧海报 · 华容道</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e8;
+    --bg2:#efe6d6;
+    --ink:#2c2420;
+    --gold:#b08a2e;
+    --gold-soft:#c9a245;
+    --gold-deep:#8a6a1f;
+    --velvet:#7a2438;
+    --velvet2:#9a3449;
+    --cream:#ffffff;
+    --panel:#ffffff;
+    --line:rgba(120,90,40,.18);
+    --muted:#8a7b63;
+    --tile-gap:4px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    font-family:"Noto Serif SC","Playfair Display",serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(201,162,69,.16), transparent 60%),
+      radial-gradient(900px 700px at 50% 25%, #fbf7ee 0%, var(--bg2) 55%, var(--bg) 100%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* 幕布装饰（浅色主题下隐藏） */
+  .curtain{display:none}
+
+  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:38px 22px 60px}
+  @media(max-width:560px){
+    .wrap{padding:22px 14px 48px}
+  }
+
+  header{text-align:center;margin-bottom:26px}
+  .kicker{
+    font-family:"Playfair Display",serif;font-style:italic;font-size:15px;letter-spacing:.32em;
+    color:var(--gold);text-transform:uppercase;margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(30px,5vw,46px);font-weight:900;letter-spacing:.06em;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold) 55%,var(--gold-deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 2px 30px rgba(201,162,69,.12);
+  }
+  h1 .en{display:block;font-family:"Playfair Display",serif;font-style:italic;font-weight:600;font-size:.42em;letter-spacing:.25em;color:var(--muted);margin-top:8px;-webkit-text-fill-color:var(--muted)}
+  .sub{color:var(--muted);margin-top:14px;font-size:14px;letter-spacing:.08em}
+
+  .layout{display:grid;grid-template-columns:240px 1fr;gap:34px;align-items:start;margin-top:8px}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}}
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;padding:20px;
+    box-shadow:0 18px 50px rgba(120,90,40,.12), 0 2px 8px rgba(120,90,40,.06);
+  }
+  .panel h3{font-size:13px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;font-weight:700}
+
+  /* 海报选择 */
+  .search-box{margin-bottom:12px}
+  .search-box input{
+    width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);
+    background:#faf6ee;color:var(--ink);font:inherit;font-size:14px;outline:none;
+    transition:border-color .2s, box-shadow .2s, background .2s;
+  }
+  .search-box input:focus{border-color:rgba(176,138,46,.8);box-shadow:0 0 0 4px rgba(176,138,46,.12);background:#fff}
+  .search-box input::placeholder{color:#a39277}
+  .posters{display:flex;flex-direction:column;gap:14px}
+  .empty-posters{
+    margin-top:10px;padding:16px 12px;border:1px dashed var(--line);border-radius:12px;
+    color:var(--muted);text-align:center;background:#faf6ee;font-size:13px;
+  }
+  .thumb{
+    position:relative;cursor:pointer;border-radius:10px;overflow:hidden;
+    border:2px solid transparent;transition:transform .25s,border-color .25s,box-shadow .25s;
+    height:280px;background:#eee2cd;
+  }
+  .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:.9;transition:opacity .25s,transform .4s}
+  .thumb:hover{transform:translateY(-2px)}
+  .thumb:hover img{opacity:1;transform:scale(1.04)}
+  .thumb.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,69,.2),0 10px 30px rgba(120,90,40,.22)}
+  .thumb.active img{opacity:1}
+  .thumb .tag{
+    position:absolute;left:0;right:0;bottom:0;padding:8px 10px;font-size:13px;letter-spacing:.06em;
+    background:linear-gradient(0deg,rgba(30,20,10,.72),transparent);color:#fff;font-weight:700;
+  }
+  .thumb .done{
+    position:absolute;top:8px;right:8px;
+    border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700;
+    color:#fff;background:rgba(36,143,77,.9);box-shadow:0 3px 10px rgba(0,0,0,.18);
+  }
+
+  /* 难度 */
+  .diff{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+  .diff button{
+    cursor:pointer;font-family:inherit;font-size:13px;color:var(--muted);
+    background:#faf6ee;border:1px solid var(--line);
+    border-radius:9px;padding:10px 4px;transition:.2s;line-height:1.3;
+  }
+  .diff button b{display:block;color:var(--ink);font-size:15px;font-weight:700}
+  .diff button:hover{border-color:rgba(201,162,69,.6);color:var(--ink)}
+  .diff button.active{background:linear-gradient(180deg,var(--velvet2),var(--velvet));border-color:var(--gold);color:#f6e9c8}
+  .diff button.active b{color:#fff}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .stat{background:#faf6ee;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .stat .lbl{font-size:11px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+  .stat .val{font-family:"Playfair Display",serif;font-size:24px;color:var(--gold-deep);margin-top:2px}
+
+  .actions{display:grid;gap:10px;margin-top:18px}
+  .btn{
+    cursor:pointer;font-family:inherit;font-size:14px;letter-spacing:.08em;
+    border-radius:10px;padding:12px 14px;border:1px solid transparent;transition:.2s;font-weight:700;
+  }
+  .btn-primary{background:linear-gradient(180deg,var(--gold-soft),var(--gold));color:#fff;border-color:var(--gold-deep);box-shadow:0 8px 20px rgba(201,162,69,.3)}
+  .btn-primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .btn-ghost{background:#faf6ee;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{background:#f3ead6;border-color:var(--gold)}
+  .btn-ghost.on{background:#f3ead6;border-color:var(--gold);color:var(--gold-deep)}
+
+
+  /* 棋盘 */
+  .stage{display:flex;flex-direction:column;align-items:center}
+  .board-wrap{position:relative}
+  .board{
+    position:relative;
+    border-radius:14px;overflow:hidden;
+    background:
+      repeating-linear-gradient(45deg, rgba(176,138,46,.05) 0 12px, transparent 12px 24px),
+      linear-gradient(180deg,#f3ead7,#e8dcc0);
+    border:10px solid #d9c79a;
+    box-shadow:
+      0 0 0 2px rgba(176,138,46,.45),
+      0 24px 50px rgba(120,90,40,.25),
+      inset 0 0 30px rgba(120,90,40,.18);
+    touch-action:none;user-select:none;
+  }
+  .tile{
+    position:absolute;top:0;left:0;
+    overflow:hidden;
+    border-radius:3px;
+    cursor:pointer;
+    transition:transform .18s cubic-bezier(.22,.9,.3,1), filter .15s, box-shadow .15s;
+    will-change:transform;
+    box-shadow:inset 0 0 0 1px rgba(120,90,40,.28);
+    background:#ece0c6;
+  }
+  .tile img{position:absolute;top:0;left:0;pointer-events:none;display:block;max-width:none}
+  .tile:hover{filter:brightness(1.04);box-shadow:inset 0 0 0 2px rgba(176,138,46,.8),0 4px 12px rgba(120,90,40,.25)}
+  .tile.movable{box-shadow:inset 0 0 0 2px rgba(176,138,46,.55)}
+  .board.preview .tile{opacity:.55}
+  .board .ghost{
+    position:absolute;inset:0;background-size:cover;background-position:center;
+    opacity:0;pointer-events:none;transition:opacity .25s;border-radius:4px;
+  }
+  .board.preview .ghost{opacity:.45}
+
+  /* 右上角提示键 */
+  .hint-btn{
+    position:absolute;top:12px;right:12px;z-index:6;
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;font-weight:700;font-size:14px;letter-spacing:.06em;
+    color:#fff;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    border:1px solid var(--gold-deep);border-radius:999px;
+    padding:9px 16px;cursor:pointer;
+    box-shadow:0 8px 20px rgba(120,90,40,.3),0 0 0 1px rgba(255,255,255,.25);
+    transition:transform .18s,filter .18s,box-shadow .18s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .hint-btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .hint-btn:active{transform:scale(.96)}
+  .hint-btn:disabled{opacity:.6;cursor:not-allowed;filter:grayscale(.3)}
+  .hint-btn .ic{font-size:16px;line-height:1}
+  .hint-btn .cd{display:none}
+  @media(max-width:560px){
+    .hint-btn{padding:10px 15px;font-size:13px}
+    .hint-btn .label{display:none}
+    .hint-btn .cd{display:inline;font-weight:700}
+  }
+
+  /* 提示后归位的图块高亮 */
+  .tile.placed{
+    animation:placedFlash 1s ease;
+    z-index:4;
+  }
+  @keyframes placedFlash{
+    0%{box-shadow:inset 0 0 0 3px rgba(40,160,80,0),0 0 0 rgba(40,160,80,0)}
+    25%{box-shadow:inset 0 0 0 3px rgba(40,160,80,.95),0 0 26px rgba(40,160,80,.7)}
+    100%{box-shadow:inset 0 0 0 1px rgba(120,90,40,.28),0 0 0 rgba(40,160,80,0)}
+  }
+
+  @media(max-width:560px){
+    .board{border-width:7px;border-radius:11px}
+    .tile{border-radius:2px}
+    .posters{flex-direction:row;overflow-x:auto;gap:10px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+    .posters .thumb{flex:0 0 96px;height:128px}
+    .posters .tag{font-size:11px}
+    .panel{padding:16px}
+    .stats{grid-template-columns:1fr 1fr}
+    .hint{font-size:12px}
+  }
+
+  .hint{margin-top:18px;color:var(--muted);font-size:13px;letter-spacing:.05em;text-align:center;line-height:1.7}
+  .hint kbd{
+    display:inline-block;padding:1px 7px;border-radius:5px;font-family:inherit;font-size:12px;
+    background:#fff;border:1px solid var(--line);color:var(--ink);margin:0 2px;box-shadow:0 1px 2px rgba(120,90,40,.15);
+  }
+
+  /* 胜利弹层 */
+  .modal{
+    position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    background:rgba(60,40,20,.45);backdrop-filter:blur(6px);padding:20px;
+  }
+  .modal.show{display:flex;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .card{
+    position:relative;text-align:center;max-width:420px;width:100%;
+    background:linear-gradient(180deg,#fffdf7,#f7efdd);
+    border:1px solid rgba(176,138,46,.45);border-radius:18px;padding:34px 28px;
+    box-shadow:0 30px 80px rgba(120,90,40,.35), inset 0 1px 0 rgba(255,255,255,.9);
+    animation:pop .45s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  .card .trophy{font-size:54px;margin-bottom:6px}
+  .card h2{
+    font-size:30px;font-weight:900;letter-spacing:.08em;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .card p{color:var(--muted);margin:12px 0 22px;line-height:1.7;font-size:14px}
+  .card .result{display:flex;gap:14px;justify-content:center;margin-bottom:22px}
+  .card .result div{background:#faf6ee;border:1px solid var(--line);border-radius:10px;padding:10px 18px;min-width:90px}
+  .card .result .lbl{font-size:11px;letter-spacing:.16em;color:var(--muted)}
+  .card .result .v{font-family:"Playfair Display",serif;font-size:22px;color:var(--gold-deep);margin-top:2px}
+
+  canvas.confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+  footer{text-align:center;color:#a9987a;font-size:12px;letter-spacing:.12em;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="curtain left"></div>
+<div class="curtain right"></div>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Musical Sliding Puzzle</div>
+    <h1>音乐剧海报 · 华容道<span class="en">Slide the curtain, reveal the show</span></h1>
+    <div class="sub">移动图块，把打乱的海报重新拼回完整模样</div>
+  </header>
+
+  <div class="layout">
+    <aside class="panel">
+      <h3>选择剧目</h3>
+      <div class="search-box">
+        <input id="posterSearch" type="search" placeholder="搜中文 / 拼音 / 英文，如 mengwei / Lighthouse" autocomplete="off" />
+      </div>
+      <div class="posters" id="posters"></div>
+      <div class="empty-posters" id="emptyPosters" hidden>没有找到匹配的海报</div>
+
+      <h3 style="margin-top:22px">难度</h3>
+      <div class="diff" id="diff">
+        <button data-cols="3" data-rows="3"><b>3×3</b>轻松</button>
+        <button data-cols="3" data-rows="4" class="active"><b>3×4</b>标准</button>
+        <button data-cols="4" data-rows="4"><b>4×4</b>挑战</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="lbl">步数</div><div class="val" id="moves">0</div></div>
+        <div class="stat"><div class="lbl">用时</div><div class="val" id="timer">00:00</div></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="shuffle">🔀 打乱重来</button>
+        <button class="btn btn-ghost" id="preview">👁 显示原图</button>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="board-wrap">
+        <button class="hint-btn" id="hint" title="提示：帮你归位一块"><span class="ic">💡</span><span class="label">提示</span></button>
+        <div class="board" id="board">
+          <div class="ghost" id="ghost"></div>
+        </div>
+      </div>
+      <div class="hint">
+        点击图块可滑动；电脑端可用键盘 <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>，移动端可在棋盘上直接上滑 / 下滑 / 左滑 / 右滑。<br>
+        卡住了？点右上角「<b style="color:var(--gold)">💡 提示</b>」帮你归位一块。
+      </div>
+    </main>
+  </div>
+
+  <footer>© Musical Puzzle · 十一版海报随机试玩</footer>
+</div>
+
+<div class="modal" id="modal">
+  <div class="card">
+    <div class="trophy">🎭</div>
+    <h2>拼图完成！</h2>
+    <p id="winText">大幕拉开，海报完整呈现。</p>
+    <div class="result">
+      <div><div class="lbl">步数</div><div class="v" id="winMoves">0</div></div>
+      <div><div class="lbl">用时</div><div class="v" id="winTime">00:00</div></div>
+    </div>
+    <div class="actions" style="margin-top:0">
+      <button class="btn btn-primary" id="again">再来一局</button>
+      <button class="btn btn-ghost" id="closeWin">关闭</button>
+    </div>
+  </div>
+</div>
+
+<canvas class="confetti" id="confetti"></canvas>
+
+<script>
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+const POSTERS = [
+  {src:"posters/poster1.jpg", title:"大状王", aliases:"da zhuang wang dz王 The Impossible Trial"},
+  {src:"posters/poster2.jpg", title:"Savior", aliases:"savior 救世主"},
+  {src:"posters/poster3.jpg", title:"嫌疑人X的献身", aliases:"xian yi ren x de xian shen xyrex The Devotion of Suspect X Suspect X"},
+  {src:"posters/poster4.jpg", title:"六个说谎的大学生", aliases:"liu ge shuo huang de da xue sheng lgshddxs Six Lying College Students Six Lying University Students"},
+  {src:"posters/poster5.jpg", title:"梦微之", aliases:"meng wei zhi mwz"},
+  {src:"posters/poster6.jpg", title:"翻国王棋", aliases:"fan guo wang qi fgwq King's Table Kings Table"},
+  {src:"posters/poster7.jpg", title:"灯塔", aliases:"deng ta dt Lighthouse"},
+  {src:"posters/poster8.jpg", title:"锦衣卫之刀与花", aliases:"jin yi wei zhi dao yu hua jywzdyh Brocade Guard Blade and Flower"},
+  {src:"posters/poster9.jpg", title:"灵之旅：冥犬少年", aliases:"ling zhi lv ming quan shao nian lzlmqsn Spirit Journey"},
+  {src:"posters/poster10.jpg", title:"辛吉路的画材店", aliases:"xin ji lu de hua cai dian xjldhcd"},
+  {src:"posters/poster11.jpg", title:"#0528", aliases:"0528"},
+  {src:"posters/poster12.jpg", title:"阿波罗尼亚", aliases:"a bo luo ni ya abln Apollonia Mia Famiglia 小酒馆"},
+  {src:"posters/poster13.jpg", title:"赵氏孤儿", aliases:"zhao shi gu er zsge The Orphan of Zhao 徐俊戏剧"},
+  {src:"posters/poster17.jpg", title:"简·爱", aliases:"jian ai ja Jane Eyre 简theater"},
+  {src:"posters/poster20.jpg", title:"SHADOW", aliases:"shadow 摇滚音乐剧 yao gun yin yue ju Sado Rocks the World"},
+  {src:"posters/poster21.jpg", title:"莫比乌斯", aliases:"mo bi wu si mbws Mobius"},
+  {src:"posters/poster22.jpg", title:"秘密花园", aliases:"mi mi hua yuan mmhy Secret Garden"},
+  {src:"posters/poster23.jpg", title:"雕像", aliases:"diao xiang dx Statue"},
+  {src:"posters/poster24.jpg", title:"弗兰肯斯坦", aliases:"fu lan ken si tan flkst Frankenstein"},
+  {src:"posters/poster25.jpg", title:"桑塔露琪亚", aliases:"sang ta lu qi ya stlqy Santa Lucia 一台好戏"},
+  {src:"posters/poster26.jpg", title:"西西里的人鱼传说", aliases:"xi xi li de ren yu chuan shuo xxldrycs The Mermaid Legend of Sicily 接着奏乐接着舞"},
+  {src:"posters/poster27.jpg", title:"三风一树", aliases:"san feng yi shu sfys The Anarchist"},
+  {src:"posters/poster28.jpg", title:"入傩", aliases:"ru nuo rn"},
+  {src:"posters/poster29.jpg", title:"出走", aliases:"chu zou cz"},
+  {src:"posters/poster30.jpg", title:"旧讼", aliases:"jiu song js 瞳剧场"},
+  {src:"posters/poster31.jpg", title:"冈格尼尔", aliases:"gang ge ni er ggne Gungnir"},
+  {src:"posters/poster32.jpg", title:"开膛手杰克", aliases:"kai tang shou jie ke ktsjk Jack the Ripper"},
+  {src:"posters/poster33.jpg", title:"跑步机", aliases:"pao bu ji pbj Treadmill Musical Noir"},
+];
+
+const state = {
+  poster:0,
+  query:'',
+  cols:3, rows:4,
+  tiles:[],      // length cols*rows, each = solved index, last is null (blank)
+  img:null,
+  moves:0,
+  startAt:null,
+  timerId:null,
+  busy:false,
+  won:false,
+};
+const posterOrder = shuffle(Array.from({length:POSTERS.length}, (_,i)=>i));
+const COMPLETED_KEY='musicalPuzzleCompletedV1';
+const completedPosters=new Set(JSON.parse(localStorage.getItem(COMPLETED_KEY)||'[]'));
+state.poster = posterOrder.find(i=>!completedPosters.has(i)) ?? posterOrder[0] ?? 0;
+
+let MAX_BOARD = 520; // 棋盘最大单元格总宽(px)，手机端按屏宽自适应
+const board = document.getElementById('board');
+const ghost = document.getElementById('ghost');
+const movesEl = document.getElementById('moves');
+const timerEl = document.getElementById('timer');
+const hintBtn = document.getElementById('hint');
+const postersEl = document.getElementById('posters');
+const posterSearchEl = document.getElementById('posterSearch');
+const emptyPostersEl = document.getElementById('emptyPosters');
+
+/* ---------- 海报选择 UI ---------- */
+function normalizeSearchText(text){
+  return String(text||'').toLowerCase().replace(/[\s·：:：\-_'’\.]/g,'');
+}
+function posterSearchText(i){
+  const p=POSTERS[i];
+  return normalizeSearchText(`${p.title} ${p.aliases||''}`);
+}
+function filteredPosterIds(){
+  const q=normalizeSearchText(state.query);
+  return posterOrder
+    .filter(i=>!q || posterSearchText(i).includes(q))
+    .sort((a,b)=>Number(completedPosters.has(a))-Number(completedPosters.has(b)));
+}
+function saveCompleted(){
+  localStorage.setItem(COMPLETED_KEY, JSON.stringify([...completedPosters]));
+}
+function renderPosterList(){
+  const ids=filteredPosterIds();
+  postersEl.innerHTML='';
+  emptyPostersEl.hidden=ids.length>0;
+  ids.forEach(i=>{
+    const p=POSTERS[i];
+    const done=completedPosters.has(i);
+    const d=document.createElement('div');
+    d.className='thumb'+(state.poster===i?' active':'');
+    d.dataset.i=i;
+    d.innerHTML=`<img src="${p.src}" alt="${p.title}">${done?'<div class="done">已通关</div>':''}<div class="tag">${p.title}</div>`;
+    d.addEventListener('click',()=>{
+      if(state.poster===i) return;
+      state.poster=i;
+      renderPosterList();
+      loadPoster();
+    });
+    postersEl.appendChild(d);
+  });
+}
+posterSearchEl.addEventListener('input',e=>{
+  state.query=e.target.value;
+  const ids=filteredPosterIds();
+  if(ids.length && !ids.includes(state.poster)){
+    state.poster=ids[0];
+    renderPosterList();
+    loadPoster();
+    return;
+  }
+  renderPosterList();
+});
+
+/* ---------- 难度 UI ---------- */
+document.getElementById('diff').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#diff button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  state.cols=+b.dataset.cols; state.rows=+b.dataset.rows;
+  loadPoster();
+});
+
+document.getElementById('shuffle').addEventListener('click',()=>{ if(state.img) startGame(); });
+document.getElementById('again').addEventListener('click',()=>{ hideWin(); startGame(); });
+document.getElementById('closeWin').addEventListener('click',hideWin);
+const previewBtn=document.getElementById('preview');
+previewBtn.addEventListener('click',()=>{
+  board.classList.toggle('preview');
+  previewBtn.classList.toggle('on');
+  previewBtn.textContent = board.classList.contains('preview') ? '🙈 隐藏原图' : '👁 显示原图';
+});
+hintBtn.addEventListener('click',useHint);
+
+/* ---------- 加载海报 ---------- */
+function setBoardShell(){
+  MAX_BOARD=computeMaxBoard();
+  const s=tileSize();
+  board.style.width=(s*state.cols)+'px';
+  board.style.height=(s*state.rows)+'px';
+}
+function loadPoster(){
+  const src=POSTERS[state.poster].src;
+  setBoardShell();
+  // 所有海报已统一为 600×800，这里不等待 onload，慢网下也能立即生成棋盘结构
+  state.img={src,naturalWidth:600,naturalHeight:800};
+  startGame();
+  const img=new Image();
+  img.src=src;
+}
+
+/* ---------- 棋盘尺寸 ---------- */
+function computeMaxBoard(){
+  const stage=document.querySelector('.stage');
+  const avail=stage ? stage.clientWidth : window.innerWidth-40;
+  return Math.max(240, Math.min(520, avail-4));
+}
+function tileSize(){
+  return Math.floor(MAX_BOARD/state.cols);
+}
+
+/* 视口变化时在不打乱进度的前提下重排棋盘尺寸 */
+function relayout(){
+  MAX_BOARD=computeMaxBoard();
+  if(!state.img) return;
+  const g=coverGeom();
+  board.style.width=g.W+'px';
+  board.style.height=g.H+'px';
+  board.querySelectorAll('.tile').forEach(t=>{
+    const solved=+t.dataset.solved, pos=+t.dataset.pos;
+    const r=Math.floor(solved/state.cols), c=solved%state.cols;
+    const pr=Math.floor(pos/state.cols), pc=pos%state.cols;
+    t.style.transition='none';
+    t.style.width=g.s+'px'; t.style.height=g.s+'px';
+    const im=t.querySelector('img');
+    im.style.width=g.dw+'px'; im.style.height=g.dh+'px';
+    im.style.transform=`translate(${g.ox-c*g.s}px,${g.oy-r*g.s}px)`;
+    t.style.transform=`translate(${pc*g.s}px,${pr*g.s}px)`;
+  });
+  requestAnimationFrame(()=>board.querySelectorAll('.tile').forEach(t=>t.style.transition=''));
+}
+let resizeTimer;
+window.addEventListener('resize',()=>{ clearTimeout(resizeTimer); resizeTimer=setTimeout(relayout,120); });
+window.addEventListener('orientationchange',()=>setTimeout(relayout,200));
+
+/* 计算海报以 cover 方式填满棋盘时的显示尺寸与偏移（CSS px），用于切片 */
+function coverGeom(){
+  const s=tileSize();
+  const W=state.cols*s, H=state.rows*s;
+  const iw=state.img.naturalWidth, ih=state.img.naturalHeight;
+  const scale=Math.max(W/iw, H/ih);
+  const dw=iw*scale, dh=ih*scale;
+  return {s,W,H,dw,dh,ox:(W-dw)/2,oy:(H-dh)/2};
+}
+
+/* ---------- 开始/打乱 ---------- */
+function startGame(){
+  stopTimer();
+  state.startAt=null;
+  state.moves=0; state.won=false; state.busy=false;
+  movesEl.textContent='0'; timerEl.textContent='00:00';
+  hideWin();
+  resetCooldown();
+
+  const N=state.cols*state.rows;
+  state.tiles=Array.from({length:N},(_,i)=>i);
+  state.tiles[N-1]=null; // 空格在最后
+
+  MAX_BOARD=computeMaxBoard();
+  sizeBoard();
+  renderTiles(true); // 先摆好
+  // 从已解状态做若干次合法随机移动，保证可解
+  setTimeout(()=>shuffleTiles(),260);
+}
+
+function sizeBoard(){
+  const g=coverGeom();
+  board.style.width=g.W+'px';
+  board.style.height=g.H+'px';
+  ghost.style.backgroundImage=`url("${state.img.src}")`;
+}
+
+function renderTiles(initial=false){
+  // 清空旧 tile
+  board.querySelectorAll('.tile').forEach(t=>t.remove());
+  const g=coverGeom();
+  const N=state.cols*state.rows;
+  state.tiles.forEach((solved,pos)=>{
+    if(solved===null) return;
+    const t=document.createElement('div');
+    t.className='tile';
+    t.dataset.pos=pos;
+    t.dataset.solved=solved;
+    const r=Math.floor(solved/state.cols), c=solved%state.cols;
+    t.style.width=g.s+'px';
+    t.style.height=g.s+'px';
+    const im=document.createElement('img');
+    im.src=state.img.src;
+    im.draggable=false;
+    im.style.width=g.dw+'px';
+    im.style.height=g.dh+'px';
+    im.style.transform=`translate(${g.ox-c*g.s}px,${g.oy-r*g.s}px)`;
+    t.appendChild(im);
+    board.appendChild(t);
+    positionTile(t,pos,initial);
+    t.addEventListener('click',e=>tryMove(+e.currentTarget.dataset.pos));
+  });
+  markMovable();
+}
+
+function positionTile(tileEl,pos,instant){
+  const s=tileSize();
+  const r=Math.floor(pos/state.cols), c=pos%state.cols;
+  if(instant){
+    tileEl.style.transition='none';
+    requestAnimationFrame(()=>{
+      tileEl.style.transform=`translate(${c*s}px,${r*s}px)`;
+      requestAnimationFrame(()=>{ tileEl.style.transition=''; });
+    });
+  }else{
+    tileEl.style.transform=`translate(${c*s}px,${r*s}px)`;
+  }
+}
+
+function blankPos(){ return state.tiles.indexOf(null); }
+
+/* 标记可移动图块（与空格相邻；同行/同列整块都可滑） */
+function markMovable(){
+  const b=blankPos();
+  const br=Math.floor(b/state.cols), bc=b%state.cols;
+  board.querySelectorAll('.tile').forEach(t=>{
+    const p=+t.dataset.pos;
+    const pr=Math.floor(p/state.cols), pc=p%state.cols;
+    const can = (pr===br || pc===bc) && p!==b;
+    t.classList.toggle('movable',can && !state.won);
+  });
+}
+
+/* ---------- 移动逻辑 ---------- */
+function tryMove(pos, opts={}){
+  const {count=true}=opts;
+  return new Promise(resolve=>{
+    if(state.busy||state.won) return resolve(false);
+    const b=blankPos();
+    if(pos===b) return resolve(false);
+    const pr=Math.floor(pos/state.cols), pc=pos%state.cols;
+    const br=Math.floor(b/state.cols), bc=b%state.cols;
+    if(pr!==br && pc!==bc) return resolve(false); // 不在同行同列
+
+    if(!state.startAt) startTimer();
+    state.busy=true;
+
+    if(pr===br){
+      // 横向：滑动 pc 与 bc 之间的所有 tile 向空格方向
+      const dir = bc>pc ? 1 : -1;
+      for(let c=bc; c!==pc; c-=dir){
+        state.tiles[br*state.cols+c]=state.tiles[br*state.cols+(c-dir)];
+      }
+      state.tiles[pos]=null;
+    }else{
+      const dir = br>pr ? 1 : -1;
+      for(let r=br; r!==pr; r-=dir){
+        state.tiles[r*state.cols+pc]=state.tiles[(r-dir)*state.cols+pc];
+      }
+      state.tiles[pos]=null;
+    }
+    if(count){ state.moves++; movesEl.textContent=state.moves; }
+
+    // 更新每个 tile 的 data-pos 与位置
+    state.tiles.forEach((solved,p)=>{
+      if(solved===null) return;
+      const t=board.querySelector(`.tile[data-solved="${solved}"]`);
+      if(t){ t.dataset.pos=p; positionTile(t,p,false); }
+    });
+
+    setTimeout(()=>{
+      state.busy=false;
+      markMovable();
+      checkWin();
+      resolve(true);
+    },190);
+  });
+}
+
+/* ---------- 提示：从左上角开始按顺序归位 ---------- */
+function manhattan(b){
+  let d=0;
+  for(let p=0;p<b.length;p++){
+    const v=b[p]; if(v===null) continue;
+    d+=Math.abs(Math.floor(v/state.cols)-Math.floor(p/state.cols))+Math.abs(v%state.cols-p%state.cols);
+  }
+  return d;
+}
+function neighborBoards(b, locked){
+  const idx=b.indexOf(null);
+  const cols=state.cols, rows=state.rows;
+  const r=Math.floor(idx/cols), c=idx%cols, out=[];
+  const push=(p)=>{
+    if(locked.has(p)) return; // 不能把已归位的前缀图块挤走
+    const n=b.slice(); n[idx]=n[p]; n[p]=null; out.push({pos:p,board:n});
+  };
+  if(r>0) push(idx-cols);
+  if(r<rows-1) push(idx+cols);
+  if(c>0) push(idx-1);
+  if(c<cols-1) push(idx+1);
+  return out;
+}
+/* 找到第一个未归位的位置（从左上角、从左到右从上到下） */
+function firstWrong(b){
+  const N=b.length;
+  for(let k=0;k<N-1;k++) if(b[k]!==k) return k;
+  if(b[N-1]!==null) return N-1;
+  return -1; // 已全部归位
+}
+/* A* 搜索：在锁定前 lockCount 个位置的前提下，把 [lockCount..target] 这一整块全部归位。
+   用曼哈顿距离作启发式，比纯 BFS 快很多，可绕过行末/角块的奇偶性死锁。 */
+function bfsPlaceBlock(target, lockCount){
+  const start=state.tiles.slice();
+  const locked=new Set();
+  for(let i=0;i<lockCount;i++) locked.add(i);
+  const block=[];
+  for(let k=lockCount;k<=target;k++) block.push(k);
+  const goal=b=>{
+    for(let k=lockCount;k<=target;k++){ if(b[k]!==k) return false; }
+    return true;
+  };
+  if(goal(start)) return {path:[]};
+
+  // 启发式：目标块内每个图块到其目标格的曼哈顿距离之和
+  const h=b=>{
+    let s=0;
+    for(let p=0;p<b.length;p++){
+      const v=b[p]; if(v===null) continue;
+      if(v>=lockCount && v<=target){
+        s+=Math.abs(Math.floor(v/state.cols)-Math.floor(p/state.cols))
+          +Math.abs(v%state.cols-p%state.cols);
+      }
+    }
+    return s;
+  };
+
+  const key=b=>b.join(',');
+  // 简易二叉堆
+  const heap=[], gScore=new Map(), came=new Map();
+  const push=(node,f)=>{ heap.push({node,f}); let i=heap.length-1;
+    while(i>0){const p=(i-1)>>1;if(heap[p].f<=heap[i].f)break;[heap[p],heap[i]]=[heap[i],heap[p]];i=p;} };
+  const pop=()=>{ const top=heap[0],last=heap.pop(); if(heap.length){heap[0]=last;let i=0;
+    for(;;){let l=2*i+1,r=2*i+2,s=i;if(l<heap.length&&heap[l].f<heap[s].f)s=l;if(r<heap.length&&heap[r].f<heap[s].f)s=r;if(s===i)break;[heap[s],heap[i]]=[heap[i],heap[s]];i=s;}} return top; };
+
+  const sk=key(start);
+  gScore.set(sk,0); push(sk,h(start));
+  const MAX_NODES=300000, MAX_F=140;
+  let explored=0;
+
+  while(heap.length){
+    const {node}=pop();
+    const cur=node.split(',').map(x=>x===''?null:+x);
+    const gg=gScore.get(node);
+    if(gg>0 && goal(cur)){
+      // 回溯路径
+      const path=[]; let k=node;
+      while(came.has(k)){ const prev=came.get(k); path.push(prev.move); k=prev.key; }
+      path.reverse(); return {path};
+    }
+    if(++explored>MAX_NODES) break;
+    for(const {pos,board:nb} of neighborBoards(cur,locked)){
+      const nk=key(nb);
+      const ng=gg+1;
+      if(ng>= (gScore.has(nk)?gScore.get(nk):Infinity)) continue;
+      const f=ng+h(nb);
+      if(f>MAX_F) continue;
+      gScore.set(nk,ng); came.set(nk,{key:node,move:pos}); push(nk,f);
+    }
+  }
+  return {path:null};
+}
+function hintPath(){
+  const start=state.tiles.slice();
+  const target=firstWrong(start);
+  if(target<0) return null;
+  // 从「只锁定 target 之前的所有块」开始，失败则逐块放宽（最多回看 4 块）
+  for(let back=0; back<=4; back++){
+    const lockCount=Math.max(0, target-back);
+    const res=bfsPlaceBlock(target, lockCount);
+    if(res.path) return {path:res.path, target};
+  }
+  return {path:null, target};
+}
+/* 贪心单步：让目标图块更接近其目标格，同时不破坏已锁定前缀 */
+function greedyStep(target){
+  const locked=new Set();
+  for(let i=0;i<target;i++) locked.add(i);
+  let best=null, bestScore=Infinity;
+  for(const {pos,board:nb} of neighborBoards(state.tiles,locked)){
+    // 评分：目标图块到目标格的曼哈顿距离 + 整体曼哈顿距离做平局
+    const tp=nb.indexOf(target);
+    const td=Math.abs(Math.floor(tp/state.cols)-Math.floor(target/state.cols))
+            +Math.abs(tp%state.cols-target%state.cols);
+    const score=td*100+manhattan(nb);
+    if(score<bestScore){ bestScore=score; best=pos; }
+  }
+  if(best===null){
+    // 退路：不锁定也走一步，保证有响应
+    const nb=neighborBoards(state.tiles,new Set());
+    return nb.length?nb[0].pos:null;
+  }
+  return best;
+}
+async function useHint(){
+  if(state.busy||state.won||!state.img||cooldownLeft>0) return;
+
+  const before=state.tiles.slice();
+  const beforeCorrect=new Set();
+  for(let i=0;i<before.length;i++){ if(before[i]===i) beforeCorrect.add(i); }
+
+  let path=[], target=-1;
+  const res=hintPath();
+  if(res && res.path){
+    path=res.path; target=res.target;
+  }else{
+    // 找不到完整路径时，朝当前应归位的目标走一步
+    target = res ? res.target : firstWrong(state.tiles);
+    const one=(target>=0)?greedyStep(target):null;
+    if(one!=null) path=[one];
+  }
+
+  // 提示帮忙移动的步数同样计入总步数
+  for(const pos of path){
+    const ok=await tryMove(pos); // 默认 count:true
+    if(!ok || state.won) break;
+  }
+
+  // 高亮本次按顺序刚被归位的那一块
+  if(target>=0 && state.tiles[target]===target){
+    const t=board.querySelector(`.tile[data-solved="${target}"]`);
+    if(t){ t.classList.remove('placed'); void t.offsetWidth; t.classList.add('placed'); }
+  }
+
+  // 20 秒冷却
+  if(!state.won) startCooldown();
+}
+
+/* ---------- 提示冷却 ---------- */
+const HINT_COOLDOWN=20;
+let cooldownLeft=0, cooldownTimer=null;
+function hintBtnIdleHTML(){ return '<span class="ic">💡</span><span class="label">提示</span>'; }
+function renderCooldownBtn(){
+  if(cooldownLeft>0){
+    hintBtn.disabled=true;
+    hintBtn.innerHTML=`<span class="ic">⏳</span><span class="label">提示 ${cooldownLeft}s</span><span class="cd">${cooldownLeft}s</span>`;
+  }else{
+    hintBtn.disabled=false;
+    hintBtn.innerHTML=hintBtnIdleHTML();
+  }
+}
+function startCooldown(){
+  cooldownLeft=HINT_COOLDOWN;
+  renderCooldownBtn();
+  if(cooldownTimer) clearInterval(cooldownTimer);
+  cooldownTimer=setInterval(()=>{
+    cooldownLeft--;
+    if(cooldownLeft<=0){ clearInterval(cooldownTimer); cooldownTimer=null; cooldownLeft=0; }
+    renderCooldownBtn();
+  },1000);
+}
+function resetCooldown(){
+  if(cooldownTimer){ clearInterval(cooldownTimer); cooldownTimer=null; }
+  cooldownLeft=0;
+  hintBtn.disabled=false;
+  hintBtn.innerHTML=hintBtnIdleHTML();
+}
+
+/* ---------- 移动端滑动控制 ---------- */
+const swipeState={active:false,pointerId:null,x:0,y:0};
+function resetSwipe(){
+  swipeState.active=false;
+  swipeState.pointerId=null;
+}
+function directionTarget(dir){
+  const b=blankPos();
+  const br=Math.floor(b/state.cols), bc=b%state.cols;
+  if(dir==='up'    && br<state.rows-1) return (br+1)*state.cols+bc;
+  if(dir==='down'  && br>0)            return (br-1)*state.cols+bc;
+  if(dir==='left'  && bc<state.cols-1) return br*state.cols+(bc+1);
+  if(dir==='right' && bc>0)            return br*state.cols+(bc-1);
+  return -1;
+}
+function moveByDirection(dir){
+  const target=directionTarget(dir);
+  if(target>=0) tryMove(target);
+}
+board.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse' || state.won || state.busy) return;
+  if(e.currentTarget.setPointerCapture){
+    try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(_e){}
+  }
+  swipeState.active=true;
+  swipeState.pointerId=e.pointerId;
+  swipeState.x=e.clientX;
+  swipeState.y=e.clientY;
+});
+board.addEventListener('pointerup',e=>{
+  if(!swipeState.active || e.pointerId!==swipeState.pointerId) return;
+  if(e.currentTarget.releasePointerCapture){
+    try{ e.currentTarget.releasePointerCapture(e.pointerId); }catch(_e){}
+  }
+  const dx=e.clientX-swipeState.x;
+  const dy=e.clientY-swipeState.y;
+  resetSwipe();
+  if(Math.max(Math.abs(dx),Math.abs(dy))<18) return; // 轻触仍走 click
+  const dir = Math.abs(dx)>Math.abs(dy)
+    ? (dx>0 ? 'right' : 'left')
+    : (dy>0 ? 'down' : 'up');
+  moveByDirection(dir);
+});
+board.addEventListener('pointercancel',resetSwipe);
+
+/* ---------- 键盘控制（把空格附近的 tile 推过来） ---------- */
+document.addEventListener('keydown',e=>{
+  if(state.won||state.busy||!state.img) return;
+  const keyMap={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+  const dir=keyMap[e.key];
+  if(!dir) return;
+  const target=directionTarget(dir);
+  if(target>=0){ e.preventDefault(); tryMove(target); }
+});
+
+/* ---------- 随机打乱（合法移动） ---------- */
+function shuffleTiles(){
+  let prevBlank=-1, moves=0;
+  const total = state.cols*state.rows;
+  const rounds = total<=9 ? 120 : total<=12 ? 220 : 360;
+  while(moves<rounds){
+    const b=blankPos();
+    const br=Math.floor(b/state.cols), bc=b%state.cols;
+    const neighbors=[];
+    // 为了打散得更充分，允许移动整行/整列端点，这里取相邻格的随机合法单步
+    if(br>0) neighbors.push(b-state.cols);
+    if(br<state.rows-1) neighbors.push(b+state.cols);
+    if(bc>0) neighbors.push(b-1);
+    if(bc<state.cols-1) neighbors.push(b+1);
+    const cand=neighbors.filter(n=>n!==prevBlank);
+    const pick=cand[Math.floor(Math.random()*cand.length)];
+    prevBlank=b;
+    // 单步滑动
+    doMoveOneStep(pick);
+    moves++;
+  }
+  // 确保不是已解
+  if(isSolved()) doMoveOneStep(blankPos()+ (blankPos()%state.cols===0?1:-1) > -1 ? blankPos()+1 : blankPos()-1);
+  state.busy=false;
+  // 重置位置（无动画瞬间对齐），再开启动画
+  board.querySelectorAll('.tile').forEach(t=>{
+    t.style.transition='none';
+    positionTile(t,+t.dataset.pos,true);
+  });
+  setTimeout(()=>board.querySelectorAll('.tile').forEach(t=>t.style.transition=''),50);
+  markMovable();
+}
+
+// 仅用于打乱：移动一个相邻 tile（单步），直接改数据并更新 DOM 位置（无过渡）
+function doMoveOneStep(pos){
+  const b=blankPos();
+  if(pos<0) return;
+  state.tiles[b]=state.tiles[pos];
+  state.tiles[pos]=null;
+  const solved=state.tiles[b];
+  const t=board.querySelector(`.tile[data-solved="${solved}"]`);
+  if(t){ t.dataset.pos=b; }
+}
+
+/* ---------- 胜负 ---------- */
+function isSolved(){
+  for(let i=0;i<state.tiles.length-1;i++){
+    if(state.tiles[i]!==i) return false;
+  }
+  return state.tiles[state.tiles.length-1]===null;
+}
+function checkWin(){
+  if(!isSolved()) return;
+  state.won=true;
+  completedPosters.add(state.poster);
+  saveCompleted();
+  renderPosterList();
+  stopTimer();
+  resetCooldown();
+  hintBtn.disabled=true;
+  board.querySelectorAll('.tile').forEach(t=>t.classList.remove('movable'));
+  // 拼图完成后短暂展示再弹窗
+  setTimeout(()=>{
+    document.getElementById('winMoves').textContent=state.moves;
+    document.getElementById('winTime').textContent=timerEl.textContent;
+    document.getElementById('winText').textContent=
+      `《${POSTERS[state.poster].title}》海报已完整呈现，为你拉起大幕！`;
+    document.getElementById('modal').classList.add('show');
+    burstConfetti();
+  },260);
+}
+function hideWin(){
+  document.getElementById('modal').classList.remove('show');
+}
+
+/* ---------- 计时器 ---------- */
+function startTimer(){
+  state.startAt=Date.now();
+  state.timerId=setInterval(()=>{
+    const s=Math.floor((Date.now()-state.startAt)/1000);
+    const m=String(Math.floor(s/60)).padStart(2,'0');
+    const ss=String(s%60).padStart(2,'0');
+    timerEl.textContent=`${m}:${ss}`;
+  },500);
+}
+function stopTimer(){ if(state.timerId){clearInterval(state.timerId);state.timerId=null;} }
+
+/* ---------- 彩屑 ---------- */
+const cvs=document.getElementById('confetti');
+const ctx=cvs.getContext('2d');
+let parts=[], raf=null;
+function sizeCanvas(){cvs.width=innerWidth;cvs.height=innerHeight;}
+addEventListener('resize',sizeCanvas);sizeCanvas();
+function burstConfetti(){
+  const colors=['#e8c87a','#f3dfa6','#7a2438','#c84b63','#ffffff','#b8924a'];
+  for(let i=0;i<160;i++){
+    parts.push({
+      x:innerWidth/2+(Math.random()-0.5)*120,
+      y:innerHeight*0.35,
+      vx:(Math.random()-0.5)*9,
+      vy:Math.random()*-9-2,
+      g:0.18+Math.random()*0.08,
+      s:6+Math.random()*8,
+      r:Math.random()*6,
+      c:colors[Math.floor(Math.random()*colors.length)],
+      life:1
+    });
+  }
+  if(!raf) loop();
+}
+function loop(){
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  parts.forEach(p=>{
+    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=0.08; p.life-=0.006;
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);
+    ctx.globalAlpha=Math.max(0,p.life);
+    ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.5);
+    ctx.restore();
+  });
+  parts=parts.filter(p=>p.life>0 && p.y<innerHeight+40);
+  if(parts.length){raf=requestAnimationFrame(loop);}else{ctx.clearRect(0,0,cvs.width,cvs.height);raf=null;}
+}
+
+/* ---------- 启动 ---------- */
+renderPosterList();
+loadPoster();
+</script>
+</body>
+</html>
