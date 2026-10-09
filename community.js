@@ -206,7 +206,8 @@ async function submitCommunityPoster(event){
   if(community.loading) return;
   if(!communityConfigured()) return setSubmitMessage('投稿服务尚未完成配置。');
   if(!community.file || !community.imageInfo) return setSubmitMessage('请先选择一张通过全部检查的海报。');
-  const form=new FormData(event.currentTarget);
+  const formElement=event.currentTarget;
+  const form=new FormData(formElement);
   const title=String(form.get('title')||'').trim();
   const aliases=String(form.get('aliases')||'').trim();
   const sourceUrl=String(form.get('source_url')||'').trim();
@@ -230,7 +231,7 @@ async function submitCommunityPoster(event){
     renderPosterList();
     loadPoster();
     setSubmitMessage('投稿成功！海报已标记为“用户投稿”并立即加入游戏。','success');
-    event.currentTarget.reset();
+    formElement.reset();
     resetImageCheck();
     setTimeout(closeCommunityModal,1400);
   }catch(error){
