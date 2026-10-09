@@ -86,16 +86,16 @@
   .thumb{
     position:relative;cursor:pointer;border-radius:10px;overflow:hidden;
     border:2px solid transparent;transition:transform .25s,border-color .25s,box-shadow .25s;
-    height:280px;background:#eee2cd;
+    height:318px;background:#eee2cd;
   }
-  .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:.9;transition:opacity .25s,transform .4s}
+  .thumb img{position:absolute;inset:0 0 38px;width:100%;height:calc(100% - 38px);object-fit:cover;display:block;opacity:.9;transition:opacity .25s,transform .4s}
   .thumb:hover{transform:translateY(-2px)}
   .thumb:hover img{opacity:1;transform:scale(1.04)}
   .thumb.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,69,.2),0 10px 30px rgba(120,90,40,.22)}
   .thumb.active img{opacity:1}
   .thumb .tag{
-    position:absolute;left:0;right:0;bottom:0;padding:8px 10px;font-size:13px;letter-spacing:.06em;
-    background:linear-gradient(0deg,rgba(30,20,10,.72),transparent);color:#fff;font-weight:700;
+    position:absolute;left:0;right:0;bottom:0;height:38px;padding:9px 10px;font-size:13px;letter-spacing:.06em;
+    background:#fff;color:var(--ink);font-weight:700;border-top:1px solid var(--line);
   }
   .thumb .done{
     position:absolute;top:8px;right:8px;
@@ -207,7 +207,7 @@
     .board{border-width:7px;border-radius:11px}
     .tile{border-radius:2px}
     .posters{flex-direction:row;overflow-x:auto;gap:10px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
-    .posters .thumb{flex:0 0 96px;height:128px}
+    .posters .thumb{flex:0 0 96px;height:166px}
     .posters .tag{font-size:11px}
     .panel{padding:16px}
     .stats{grid-template-columns:1fr 1fr}
@@ -329,7 +329,7 @@
     <div class="community-head">
       <div>
         <h2 id="communityTitle">投稿音乐剧海报</h2>
-        <p>通过基础检查后会立即显示，并标记为“用户投稿”；达到 3 次有效举报后自动隐藏。</p>
+        <p>仅接受“清晰剧名＋概念背景”的完整海报；真人照片、角色卡、标题被裁切或遮挡的图片不会通过。</p>
       </div>
       <button class="close-community" id="closeCommunity" type="button" aria-label="关闭">×</button>
     </div>
@@ -364,8 +364,16 @@
         <div class="checklist" id="imageChecks"></div>
       </div>
       <label class="confirm-row">
+        <input type="checkbox" name="no_people" value="yes" required>
+        <span>我确认画面以剧名和概念背景为主，不含真人演员照片或角色卡。</span>
+      </label>
+      <label class="confirm-row">
+        <input type="checkbox" name="title_visible" value="yes" required>
+        <span>我确认音乐剧标题完整、清晰可见，没有被裁切、贴纸、标签或其他内容遮挡。</span>
+      </label>
+      <label class="confirm-row">
         <input type="checkbox" name="authentic" value="yes" required>
-        <span>我确认这是完整、真实且与音乐剧相关的宣传概念海报，并保留原有署名与水印；我理解虚假或无关投稿会被举报下架。</span>
+        <span>我确认图片真实且与音乐剧相关，并保留原有署名与水印；不符合标准的投稿会被直接删除。</span>
       </label>
       <div class="submit-message" id="submitMessage" hidden></div>
       <div class="community-actions">
@@ -399,7 +407,6 @@ const POSTERS = [
   {src:"posters/poster9.jpg", title:"灵之旅：冥犬少年", aliases:"ling zhi lv ming quan shao nian lzlmqsn Spirit Journey"},
   {src:"posters/poster10.jpg", title:"辛吉路的画材店", aliases:"xin ji lu de hua cai dian xjldhcd"},
   {src:"posters/poster11.jpg", title:"#0528", aliases:"0528"},
-  {src:"posters/poster12.jpg", title:"阿波罗尼亚", aliases:"a bo luo ni ya abln Apollonia Mia Famiglia 小酒馆"},
   {src:"posters/poster13.jpg", title:"赵氏孤儿", aliases:"zhao shi gu er zsge The Orphan of Zhao 徐俊戏剧"},
   {src:"posters/poster17.jpg", title:"简·爱", aliases:"jian ai ja Jane Eyre 简theater"},
   {src:"posters/poster20.jpg", title:"SHADOW", aliases:"shadow 摇滚音乐剧 yao gun yin yue ju Sado Rocks the World"},
@@ -407,7 +414,6 @@ const POSTERS = [
   {src:"posters/poster22.jpg", title:"秘密花园", aliases:"mi mi hua yuan mmhy Secret Garden"},
   {src:"posters/poster23.jpg", title:"雕像", aliases:"diao xiang dx Statue"},
   {src:"posters/poster24.jpg", title:"弗兰肯斯坦", aliases:"fu lan ken si tan flkst Frankenstein"},
-  {src:"posters/poster25.jpg", title:"桑塔露琪亚", aliases:"sang ta lu qi ya stlqy Santa Lucia 一台好戏"},
   {src:"posters/poster26.jpg", title:"西西里的人鱼传说", aliases:"xi xi li de ren yu chuan shuo xxldrycs The Mermaid Legend of Sicily 接着奏乐接着舞"},
   {src:"posters/poster27.jpg", title:"三风一树", aliases:"san feng yi shu sfys The Anarchist"},
   {src:"posters/poster28.jpg", title:"入傩", aliases:"ru nuo rn"},

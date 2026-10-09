@@ -214,6 +214,8 @@ async function submitCommunityPoster(event){
   const sourceNote=String(form.get('source_note')||'').trim();
   if(!title) return setSubmitMessage('请填写音乐剧名称。');
   if(!/^https:\/\//i.test(sourceUrl)) return setSubmitMessage('请填写可访问的 HTTPS 官方来源链接。');
+  if(form.get('no_people')!=='yes') return setSubmitMessage('只接受不含真人演员照片或角色卡的概念海报。');
+  if(form.get('title_visible')!=='yes') return setSubmitMessage('请确认音乐剧标题完整清晰，没有被裁切或遮挡。');
   if(form.get('authentic')!=='yes') return setSubmitMessage('请确认图片真实、完整且与音乐剧相关。');
   community.loading=true;
   const {submit}=communityEls();
