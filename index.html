@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="community.css">
 <style>
   :root{
     --bg:#f6f1e8;
@@ -264,6 +265,8 @@
   <div class="layout">
     <aside class="panel">
       <h3>选择剧目</h3>
+      <button class="btn btn-ghost community-trigger" id="openCommunity" type="button">＋ 投稿新海报</button>
+      <div class="community-status" id="communityStatus" hidden></div>
       <div class="search-box">
         <input id="posterSearch" type="search" placeholder="搜中文 / 拼音 / 英文，如 mengwei / Lighthouse" autocomplete="off" />
       </div>
@@ -318,6 +321,58 @@
       <button class="btn btn-primary" id="again">再来一局</button>
       <button class="btn btn-ghost" id="closeWin">关闭</button>
     </div>
+  </div>
+</div>
+
+<div class="community-modal" id="communityModal" aria-hidden="true">
+  <div class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="communityTitle">
+    <div class="community-head">
+      <div>
+        <h2 id="communityTitle">投稿音乐剧海报</h2>
+        <p>通过基础检查后会立即显示，并标记为“用户投稿”；达到 3 次有效举报后自动隐藏。</p>
+      </div>
+      <button class="close-community" id="closeCommunity" type="button" aria-label="关闭">×</button>
+    </div>
+    <form class="community-form" id="communityForm">
+      <div class="field">
+        <label for="posterTitle">音乐剧名称 <span>*</span></label>
+        <input id="posterTitle" name="title" maxlength="80" required placeholder="例如：阿波罗尼亚">
+      </div>
+      <div class="field">
+        <label for="posterAliases">拼音 / 英文别名</label>
+        <input id="posterAliases" name="aliases" maxlength="240" placeholder="用于搜索，可不填">
+      </div>
+      <div class="field">
+        <label for="posterSource">官方来源链接 <span>*</span></label>
+        <input id="posterSource" name="source_url" type="url" required pattern="https://.*" placeholder="官网、官微或官方售票页链接">
+        <small>来源用于核验真实性；请勿填写小红书搬运、网盘或无法公开访问的链接。</small>
+      </div>
+      <div class="field">
+        <label for="posterNote">来源说明</label>
+        <textarea id="posterNote" name="source_note" rows="2" maxlength="300" placeholder="例如：制作公司官微发布的正式主视觉"></textarea>
+      </div>
+      <div class="field">
+        <label for="posterFile">完整海报图片 <span>*</span></label>
+        <div class="upload-drop">
+          <img class="poster-preview" id="posterPreview" alt="待投稿海报预览">
+          <div class="poster-placeholder" id="posterPlaceholder">选择后<br>预览海报</div>
+          <div>
+            <input id="posterFile" type="file" accept="image/jpeg,image/png,image/webp" required>
+            <div class="upload-meta" id="uploadMeta">最低 600×800，建议 3:4 竖版，最大 8MB</div>
+          </div>
+        </div>
+        <div class="checklist" id="imageChecks"></div>
+      </div>
+      <label class="confirm-row">
+        <input type="checkbox" name="authentic" value="yes" required>
+        <span>我确认这是完整、真实且与音乐剧相关的宣传概念海报，并保留原有署名与水印；我理解虚假或无关投稿会被举报下架。</span>
+      </label>
+      <div class="submit-message" id="submitMessage" hidden></div>
+      <div class="community-actions">
+        <button class="btn btn-ghost" id="cancelCommunity" type="button">取消</button>
+        <button class="btn btn-primary" id="submitPoster" type="submit">上传并立即显示</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -394,6 +449,9 @@ const emptyPostersEl = document.getElementById('emptyPosters');
 function normalizeSearchText(text){
   return String(text||'').toLowerCase().replace(/[\s·：:：\-_'’\.]/g,'');
 }
+function escapeHTML(text){
+  return String(text||'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+}
 function posterSearchText(i){
   const p=POSTERS[i];
   return normalizeSearchText(`${p.title} ${p.aliases||''}`);
@@ -401,7 +459,7 @@ function posterSearchText(i){
 function filteredPosterIds(){
   const q=normalizeSearchText(state.query);
   return posterOrder
-    .filter(i=>!q || posterSearchText(i).includes(q))
+    .filter(i=>!POSTERS[i].hidden && (!q || posterSearchText(i).includes(q)))
     .sort((a,b)=>Number(completedPosters.has(a))-Number(completedPosters.has(b)));
 }
 function saveCompleted(){
@@ -417,7 +475,15 @@ function renderPosterList(){
     const d=document.createElement('div');
     d.className='thumb'+(state.poster===i?' active':'');
     d.dataset.i=i;
-    d.innerHTML=`<img src="${p.src}" alt="${p.title}">${done?'<div class="done">已通关</div>':''}<div class="tag">${p.title}</div>`;
+    const safeTitle=escapeHTML(p.title);
+    d.innerHTML=`<img src="${p.src}" alt="${safeTitle}">${p.submitted?'<div class="submission-badge">用户投稿</div>':''}${p.submitted?'<button class="report-poster" type="button">举报</button>':(done?'<div class="done">已通关</div>':'')}<div class="tag">${safeTitle}</div>`;
+    const reportButton=d.querySelector('.report-poster');
+    if(reportButton){
+      reportButton.addEventListener('click',event=>{
+        event.stopPropagation();
+        reportCommunityPoster(p.communityId,p.title);
+      });
+    }
     d.addEventListener('click',()=>{
       if(state.poster===i) return;
       state.poster=i;
@@ -1019,5 +1085,7 @@ function loop(){
 renderPosterList();
 loadPoster();
 </script>
+<script src="community-config.js"></script>
+<script src="community.js"></script>
 </body>
 </html>
